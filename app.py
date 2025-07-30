@@ -52,8 +52,8 @@ if uploaded_file:
         output = io.BytesIO()
         try:
             with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-                results['full_log'].to_excel(writer, sheet_name='Full Log', index=False)
-                writer.save()
+    results['full_log'].to_excel(writer, sheet_name='Full Log', index=False)
+
             st.download_button(
                 label="📥 Download Full Annotated Log",
                 data=output.getvalue(),
