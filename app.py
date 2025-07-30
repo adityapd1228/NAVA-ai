@@ -24,43 +24,44 @@ def analyze_submittal_log(uploaded_file):
 st.set_page_config(page_title="NAVA AI - Submittal Review", layout="wide")
 st.title("📄 Submittal Review Analytics")
 
+
 uploaded_file = st.file_uploader("Upload Submittal Log (.xlsx)", type=["xlsx"], key="uploader_1")
 
 if uploaded_file:
     with st.spinner("Analyzing file..."):
         results = analyze_submittal_log(uploaded_file)
 
-   if results:
-    st.success("Analysis Complete ✅")
+    if results:
+        st.success("Analysis Complete ✅")
 
-    st.subheader("⏱ Delayed Approvals")
-    st.dataframe(results['delayed_approvals'])
+        st.subheader("⏱ Delayed Approvals")
+        st.dataframe(results['delayed_approvals'])
 
-    st.subheader("⏳ Pending or Rejected")
-    st.dataframe(results['pending_or_rejected'])
+        st.subheader("⏳ Pending or Rejected")
+        st.dataframe(results['pending_or_rejected'])
 
-    st.subheader("❌ Missing Activity Links")
-    st.dataframe(results['missing_links'])
+        st.subheader("❌ Missing Activity Links")
+        st.dataframe(results['missing_links'])
 
-    st.subheader("🔍 Long Open Pending Submittals")
-    st.dataframe(results['long_open_pending'])
+        st.subheader("🔍 Long Open Pending Submittals")
+        st.dataframe(results['long_open_pending'])
 
-    st.subheader("🧾 Full Annotated Log")
-    st.dataframe(results['full_log'])
+        st.subheader("🧾 Full Annotated Log")
+        st.dataframe(results['full_log'])
 
-    # 🛠️ Fix begins here — properly indented
-    output = io.BytesIO()
-    try:
-        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-            results['full_log'].to_excel(writer, sheet_name='Full Log', index=False)
+        output = io.BytesIO()
+        try:
+            with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+                results['full_log'].to_excel(writer, sheet_name='Full Log', index=False)
 
-        st.download_button(
-            label="📥 Download Full Annotated Log",
-            data=output.getvalue(),
-            file_name="full_annotated_log.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-    except Exception as e:
-        st.error(f"Error during export: {e}")
+            st.download_button(
+                label="📥 Download Full Annotated Log",
+                data=output.getvalue(),
+                file_name="full_annotated_log.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+        except Exception as e:
+            st.error(f"Error during export: {e}")
+
 
 
