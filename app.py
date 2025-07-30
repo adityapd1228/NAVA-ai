@@ -1,7 +1,7 @@
 
 import streamlit as st
 import pandas as pd
-from utils.submittal_analyzer import analyze_submittal_log
+
 
 st.set_page_config(page_title="NAVA AI - Submittal Review", layout="wide")
 st.title("📑 Submittal Review Analytics")
