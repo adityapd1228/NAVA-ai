@@ -6,12 +6,14 @@ def analyze_submittal_log(uploaded_file):
     df = pd.read_excel(uploaded_file)
 
     # Dummy dataframes for each section
-    return {
-        "delayed_approvals": df.head(2),
-        "pending_or_rejected": df.head(2),
-        "missing_links": df.head(2),
-        "long_open_pending": df.head(2)
-    }
+  return {
+    "delayed_approvals": df.head(2),
+    "pending_or_rejected": df.head(2),
+    "missing_links": df.head(2),
+    "long_open_pending": df.head(2),
+    "full_log": df  # 🔧 This fixes the missing key error
+}
+
 
 st.set_page_config(page_title="NAVA AI - Submittal Review", layout="wide")
 st.title("📑 Submittal Review Analytics")
