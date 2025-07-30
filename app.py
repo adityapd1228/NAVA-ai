@@ -1,7 +1,12 @@
 
 import streamlit as st
 import pandas as pd
-
+def analyze_submittal_log(uploaded_file):
+    import pandas as pd
+    df = pd.read_excel(uploaded_file)
+    # Mock: Add a new column for demo
+    df["Flag"] = "Pending Review"
+    return df
 
 st.set_page_config(page_title="NAVA AI - Submittal Review", layout="wide")
 st.title("📑 Submittal Review Analytics")
