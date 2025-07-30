@@ -49,7 +49,7 @@ if uploaded_file:
         st.dataframe(results['full_log'])
 
         # Export to Excel
-    output = io.BytesIO()
+   output = io.BytesIO()
 try:
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         results['full_log'].to_excel(writer, sheet_name='Full Log', index=False)
@@ -60,5 +60,6 @@ try:
         file_name="full_annotated_log.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-        except Exception as e:
-            st.error(f"Error during export: {e}")
+except Exception as e:
+    st.error(f"Error during export: {e}")
+
