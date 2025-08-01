@@ -1,4 +1,6 @@
+import streamlit as st
 from logic_analyzer import run_logic_analyzer
+import pandas as pd
 
 # ----------------- Logic Analyzer (.xer) -----------------
 st.header("🧠 Schedule Logic Analyzer")
