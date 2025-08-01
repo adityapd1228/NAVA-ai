@@ -1,3 +1,6 @@
+from modules.logic_analyzer import run_logic_analyzer
+if st.sidebar.button("Run Logic Analyzer"):
+    run_logic_analyzer(task_df, taskpred_df)
 import streamlit as st
 import pandas as pd
 import io
