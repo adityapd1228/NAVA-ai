@@ -1,0 +1,40 @@
+import pandas as pd
+import streamlit as st
+
+def run_logic_analyzer(task_df, taskpred_df):
+    st.subheader("📊 Logic Analyzer Results")
+
+    # Merge logic info with task names
+    logic_df = taskpred_df.merge(
+        task_df[['task_id', 'task_name']],
+        left_on='pred_task_id', right_on='task_id', how='left'
+    ).rename(columns={'task_name': 'Predecessor Name'}).drop(columns='task_id')
+
+    logic_df = logic_df.merge(
+        task_df[['task_id', 'task_name']],
+        left_on='task_id', right_on='task_id', how='left'
+    ).rename(columns={'task_name': 'Successor Name'})
+
+    # Map relationship types
+    rel_map = {0: 'FS', 1: 'SS', 2: 'FF', 3: 'SF'}
+    logic_df['Relationship Type'] = logic_df['relationship_type'].map(rel_map)
+    logic_df['Lag (days)'] = logic_df['lag'].astype(float) / 480  # Assuming 8hr day = 480 mins
+
+    # Flag high lags
+    logic_df['Lag Warning'] = logic_df['Lag (days)'].apply(
+        lambda x: '⚠️ High Lag' if abs(x) > 5 else '')
+
+    # --- FLOAT & CONSTRAINTS ---
+    st.markdown("### 🕒 Float & Constraint Analysis")
+
+    task_df['Total Float (days)'] = task_df['total_float'].astype(float) / 480
+    task_df['Free Float (days)'] = task_df['free_float'].astype(float) / 480
+
+    constraint_map = {
+        0: 'None', 1: 'Start On', 2: 'Finish On', 3: 'Start On or After',
+        4: 'Start On or Before', 5: 'Finish On or After',
+        6: 'Finish On or Before', 7: 'Mandatory Start', 8: 'Mandatory Finish'
+    }
+    task_df['Constraint Type'] = task_df['constraint_type'].astype(int).map(constraint_map)
+
+    # Flag risky flo
