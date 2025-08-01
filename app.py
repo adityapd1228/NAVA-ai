@@ -1,6 +1,34 @@
 from modules.logic_analyzer import run_logic_analyzer
-if st.sidebar.button("Run Logic Analyzer"):
-    run_logic_analyzer(task_df, taskpred_df)
+
+# ----------------- Logic Analyzer (.xer) -----------------
+st.header("🧠 Schedule Logic Analyzer")
+
+def extract_table(lines, table_name):
+    try:
+        start = next(i for i, line in enumerate(lines) if line.strip() == f"{table_name}%T")
+        end = next((i for i in range(start + 1, len(lines)) if lines[i].strip().endswith('%T')), len(lines))
+        headers = lines[start + 1].strip().split('\t')
+        data = [line.strip().split('\t') for line in lines[start + 2:end]]
+        df = pd.DataFrame(data, columns=headers)
+        return df
+    except Exception as e:
+        st.error(f"Error parsing table {table_name}: {e}")
+        return pd.DataFrame()
+
+uploaded_xer = st.file_uploader("📂 Upload a Primavera .xer file", type="xer", key="uploader_2")
+
+if uploaded_xer is not None:
+    lines = uploaded_xer.read().decode('utf-8', errors='ignore').splitlines()
+    task_df = extract_table(lines, "TASK")
+    taskpred_df = extract_table(lines, "TASKPRED")
+
+    if not task_df.empty and not taskpred_df.empty:
+        st.success("✅ XER file loaded. Click below to analyze schedule logic.")
+        if st.button("Run Logic Analyzer"):
+            run_logic_analyzer(task_df, taskpred_df)
+    else:
+        st.warning("⚠️ TASK or TASKPRED data missing in uploaded file.")
+
 import streamlit as st
 import pandas as pd
 import io
