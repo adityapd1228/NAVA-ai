@@ -1,4 +1,4 @@
-from modules.logic_analyzer import run_logic_analyzer
+from logic_analyzer import run_logic_analyzer
 
 # ----------------- Logic Analyzer (.xer) -----------------
 st.header("🧠 Schedule Logic Analyzer")
