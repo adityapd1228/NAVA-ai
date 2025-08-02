@@ -1,39 +1,38 @@
 import pandas as pd
 import streamlit as st
 
-def run_logic_analyzer(task_df, taskpred_df):
+def run_logic_analyzer(task_df: pd.DataFrame, taskpred_df: pd.DataFrame) -> pd.DataFrame:
     st.subheader("🔍 Logic Analyzer Results")
 
-    # Check if required columns exist before renaming or dropping
+    # Defensive renaming
     if 'task_name' in task_df.columns:
         task_df = task_df.rename(columns={'task_name': 'Predecessor Name'})
-
+    else:
+        st.warning("⚠️ Column 'task_name' not found in task_df. Skipping rename.")
+    
+    # Defensive drop
     if 'task_id' in task_df.columns:
         task_df = task_df.drop(columns='task_id')
+    else:
+        st.warning("⚠️ Column 'task_id' not found in task_df. Skipping drop.")
 
-    # Check if 'task_id' exists in taskpred_df before proceeding
-    if 'task_id' not in taskpred_df.columns or 'pred_task_id' not in taskpred_df.columns:
-        st.error("Required columns 'task_id' or 'pred_task_id' not found in task predecessor table.")
-        return
+    # Merge with taskpred_df
+    merge_cols = ['task_code', 'project_id']
+    missing_merge_cols = [col for col in merge_cols if col not in task_df.columns or col not in taskpred_df.columns]
+    if missing_merge_cols:
+        st.error(f"❌ Cannot merge: Missing columns {missing_merge_cols} in task_df or taskpred_df.")
+        return pd.DataFrame()
 
-    try:
-        # Merge the two dataframes on task_id
-        merged_df = pd.merge(
-            task_df,
-            taskpred_df,
-            how='left',
-            left_on='task_id' if 'task_id' in task_df.columns else task_df.columns[0],
-            right_on='task_id'
-        )
+    merged_df = pd.merge(task_df, taskpred_df, on=merge_cols, how='inner')
 
-        # Logic Issue Check: Find tasks with missing predecessors
-        no_pred_df = merged_df[merged_df['pred_task_id'].isnull()]
+    # Sort and reset index
+    if 'task_code' in merged_df.columns:
+        merged_df = merged_df.sort_values(by='task_code').reset_index(drop=True)
+    else:
+        st.warning("⚠️ Column 'task_code' not found in merged_df. Skipping sort.")
 
-        st.markdown("### 🔗 Tasks Without Predecessors")
-        if not no_pred_df.empty:
-            st.dataframe(no_pred_df)
-        else:
-            st.success("✅ All tasks have defined predecessor logic.")
+    # Display output
+    st.dataframe(merged_df)
 
-    except Exception as e:
-        st.error(f"❌ Logic analysis failed: {e}")
+    return merged_df
+
