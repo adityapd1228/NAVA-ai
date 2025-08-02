@@ -40,12 +40,13 @@ if uploaded_file:
 
         # Logic analysis
         st.subheader("🔍 Logic Relationship Counts")
-     rel_counts = pred_df["pred_type"].value_counts().rename({
+rel_counts = pred_df["relationship_type"].value_counts().rename({
     "FS": "Finish-Start",
     "SS": "Start-Start",
     "FF": "Finish-Finish",
     "SF": "Start-Finish"
 })
+
 
         st.bar_chart(rel_counts)
 
