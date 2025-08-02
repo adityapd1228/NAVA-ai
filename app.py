@@ -19,17 +19,16 @@ def extract_table(lines, table_name):
 
 uploaded_file = st.file_uploader("Upload a Primavera .xer file", type="xer")
 
-if uploaded_file is not None:
-    xer_content = uploaded_file.read().decode("utf-8", errors="ignore")
-    xer_lines = xer_content.splitlines()
+    if uploaded_file:
+        lines = uploaded_file.read().decode("utf-8").splitlines()
+        task_df = extract_table(lines, "TASK")
+        taskpred_df = extract_table(lines, "TASKPRED")
 
-   task_df = extract_table(lines, "TASK")
-taskpred_df = extract_table(lines, "TASKPRED")
+        if task_df.empty or taskpred_df.empty:
+            st.error("TASK or TASKPRED data missing in uploaded file.")
+        else:
+            run_logic_analyzer(task_df, taskpred_df)
 
-if task_df.empty or taskpred_df.empty:
-    st.error("TASK or TASKPRED data missing in uploaded file.")
-else:
-    run_logic_analyzer(task_df, taskpred_df)
 
 
     if not task_df.empty and not taskpred_df.empty:
